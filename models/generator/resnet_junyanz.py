@@ -18,7 +18,7 @@ class ResNet(nn.Module):
             curr_dim = curr_dim * 4
 
         for i in range(n_blocks):
-            layers += [ResBlock(curr_dim, norm_layer=norm_layer, use_bias=use_bias)]
+            layers += [ResBlock(curr_dim, use_bias=use_bias)]
 
         for i in range(2):
             layers += [nn.ConvTranspose2d(curr_dim, curr_dim // 4, kernel_size=4, stride=2, padding=1, bias=use_bias),
@@ -37,25 +37,23 @@ class ResNet(nn.Module):
 
 
 class ResBlock(nn.Module):
-    def __init__(self, conv_dim, norm_layer, use_bias):
+    def __init__(self, conv_dim, use_bias):
         super(ResBlock, self).__init__()
         conv_block = list()
 
         conv_block += [nn.ReflectionPad2d(1),
                        nn.Conv2d(conv_dim, conv_dim, kernel_size=3, stride=1, padding=0, bias=use_bias),
-                       norm_layer(conv_dim),
+                       nn.InstanceNorm2d(conv_dim, affine=True, track_running_stats=True),
                        nn.ReLU(True)]
 
         conv_block += [nn.ReflectionPad2d(1),
                        nn.Conv2d(conv_dim, conv_dim, kernel_size=3, stride=1, padding=0, bias=use_bias),
-                       norm_layer(conv_dim)]
+                       nn.InstanceNorm2d(conv_dim, affine=True, track_running_stats=True)]
 
         self.conv_block = nn.Sequential(*conv_block)
 
     def forward(self, x):
         residual = x
-
         out = self.conv_block(x)
         out += residual
-
         return out

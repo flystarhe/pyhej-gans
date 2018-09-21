@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class NLayerDiscriminator(nn.Module):
-    def __init__(self, input_nc, conv_dim=64, n_layers=3, norm_layer=nn.InstanceNorm2d, use_sigmoid=False):
+    def __init__(self, input_nc, conv_dim=64, n_layers=6, norm_layer=nn.InstanceNorm2d, use_sigmoid=True):
         super(NLayerDiscriminator, self).__init__()
 
         layers = [nn.Conv2d(input_nc, conv_dim, kernel_size=4, stride=2, padding=1),

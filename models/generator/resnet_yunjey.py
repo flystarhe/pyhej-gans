@@ -4,14 +4,14 @@ import torch.nn as nn
 class ResBlock(nn.Module):
     """Residual Block with instance normalization."""
 
-    def __init__(self, dim_in, dim_out):
+    def __init__(self, conv_dim, use_bias=True):
         super(ResBlock, self).__init__()
-        self.conv1 = nn.Conv2d(dim_in, dim_out, kernel_size=1, stride=1, padding=0, bias=False)
-        self.norm1 = nn.InstanceNorm2d(dim_out, affine=True, track_running_stats=True)
-        self.conv2 = nn.Conv2d(dim_out, dim_out, kernel_size=3, stride=1, padding=1, bias=False)
-        self.norm2 = nn.InstanceNorm2d(dim_out, affine=True, track_running_stats=True)
-        self.conv3 = nn.Conv2d(dim_out, dim_out, kernel_size=1, stride=1, padding=0, bias=False)
-        self.norm3 = nn.InstanceNorm2d(dim_out, affine=True, track_running_stats=True)
+        self.conv1 = nn.Conv2d(conv_dim, conv_dim, kernel_size=1, stride=1, padding=0, bias=use_bias)
+        self.norm1 = nn.InstanceNorm2d(conv_dim, affine=True, track_running_stats=True)
+        self.conv2 = nn.Conv2d(conv_dim, conv_dim, kernel_size=3, stride=1, padding=1, bias=use_bias)
+        self.norm2 = nn.InstanceNorm2d(conv_dim, affine=True, track_running_stats=True)
+        self.conv3 = nn.Conv2d(conv_dim, conv_dim, kernel_size=1, stride=1, padding=0, bias=use_bias)
+        self.norm3 = nn.InstanceNorm2d(conv_dim, affine=True, track_running_stats=True)
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
@@ -56,7 +56,7 @@ class ResNet(nn.Module):
 
         # Bottleneck layers.
         for i in range(repeat_num):
-            layers.append(ResBlock(dim_in=curr_dim, dim_out=curr_dim))
+            layers.append(ResBlock(conv_dim=curr_dim, use_bias=True))
 
         # Up-sampling layers.
         for i in range(2):
