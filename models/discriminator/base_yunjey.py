@@ -5,7 +5,7 @@ import numpy as np
 class Discriminator(nn.Module):
     """Discriminator network with PatchGAN."""
 
-    def __init__(self, image_size=512, input_nc=1, class_nc=2, conv_dim=64, repeat_num=7):
+    def __init__(self, image_size=512, input_nc=1, class_nc=2, conv_dim=64, repeat_num=6):
         super(Discriminator, self).__init__()
 
         layers = list()
@@ -14,9 +14,10 @@ class Discriminator(nn.Module):
 
         curr_dim = conv_dim
         for i in range(1, repeat_num):
-            layers.append(nn.Conv2d(curr_dim, curr_dim * 2, kernel_size=4, stride=2, padding=1))
+            next_dim = curr_dim * 2
+            layers.append(nn.Conv2d(curr_dim, next_dim, kernel_size=4, stride=2, padding=1))
             layers.append(nn.LeakyReLU(0.01))
-            curr_dim = curr_dim * 2
+            curr_dim = next_dim
 
         self.main = nn.Sequential(*layers)
         self.conv1 = nn.Conv2d(curr_dim, 1, kernel_size=3, stride=1, padding=1, bias=False)

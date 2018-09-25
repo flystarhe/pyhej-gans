@@ -5,7 +5,7 @@ import numpy as np
 class Discriminator(nn.Module):
     """Discriminator network with PatchGAN."""
 
-    def __init__(self, input_nc=3, conv_dim=64, repeat_num=6):
+    def __init__(self, input_nc=1, conv_dim=64, repeat_num=6):
         super(Discriminator, self).__init__()
 
         layers = list()
@@ -31,7 +31,7 @@ class Discriminator(nn.Module):
 class Classifier(nn.Module):
     """Discriminator network with PatchGAN."""
 
-    def __init__(self, image_size=512, input_nc=3, conv_dim=64, repeat_num=6, class_num=2):
+    def __init__(self, image_size=512, input_nc=1, conv_dim=64, repeat_num=6, class_num=2):
         super(Classifier, self).__init__()
 
         layers = list()
@@ -50,5 +50,6 @@ class Classifier(nn.Module):
 
     def forward(self, x):
         h = self.main(x)
-        y = self.final(h.view(h.size(0), -1))
+        h = h.view(h.size(0), -1)
+        y = self.final(h)
         return y

@@ -4,7 +4,7 @@ import torch.nn as nn
 class ResBlock(nn.Module):
     """Residual Block with instance normalization."""
 
-    def __init__(self, conv_dim, use_bias=True):
+    def __init__(self, conv_dim, use_bias):
         super(ResBlock, self).__init__()
         self.conv1 = nn.Conv2d(conv_dim, conv_dim, kernel_size=1, stride=1, padding=0, bias=use_bias)
         self.norm1 = nn.InstanceNorm2d(conv_dim, affine=True, track_running_stats=True)
@@ -49,21 +49,23 @@ class ResNet(nn.Module):
         # Down-sampling layers.
         curr_dim = conv_dim
         for i in range(2):
-            layers.append(nn.Conv2d(curr_dim, curr_dim * 4, kernel_size=4, stride=2, padding=1, bias=False))
-            layers.append(nn.InstanceNorm2d(curr_dim * 4, affine=True, track_running_stats=True))
+            next_dim = curr_dim * 2
+            layers.append(nn.Conv2d(curr_dim, next_dim, kernel_size=4, stride=2, padding=1, bias=False))
+            layers.append(nn.InstanceNorm2d(next_dim, affine=True, track_running_stats=True))
             layers.append(nn.ReLU(inplace=True))
-            curr_dim = curr_dim * 4
+            curr_dim = next_dim
 
         # Bottleneck layers.
         for i in range(repeat_num):
-            layers.append(ResBlock(conv_dim=curr_dim, use_bias=True))
+            layers.append(ResBlock(conv_dim=curr_dim, use_bias=False))
 
         # Up-sampling layers.
         for i in range(2):
-            layers.append(nn.ConvTranspose2d(curr_dim, curr_dim // 4, kernel_size=4, stride=2, padding=1, bias=False))
-            layers.append(nn.InstanceNorm2d(curr_dim // 4, affine=True, track_running_stats=True))
+            next_dim = curr_dim // 2
+            layers.append(nn.ConvTranspose2d(curr_dim, next_dim, kernel_size=4, stride=2, padding=1, bias=False))
+            layers.append(nn.InstanceNorm2d(next_dim, affine=True, track_running_stats=True))
             layers.append(nn.ReLU(inplace=True))
-            curr_dim = curr_dim // 4
+            curr_dim = next_dim
 
         layers.append(nn.ReflectionPad2d(3))
         layers.append(nn.Conv2d(curr_dim, input_nc, kernel_size=7, stride=1, padding=0, bias=False))
