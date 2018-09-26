@@ -1,9 +1,9 @@
 import torch.nn as nn
 
 
-class NLayerDiscriminator(nn.Module):
+class Discriminator(nn.Module):
     def __init__(self, input_nc, conv_dim=64, n_layers=6, use_sigmoid=False):
-        super(NLayerDiscriminator, self).__init__()
+        super(Discriminator, self).__init__()
 
         layers = [nn.Conv2d(input_nc, conv_dim, kernel_size=4, stride=2, padding=1),
                   nn.LeakyReLU(0.2, True)]

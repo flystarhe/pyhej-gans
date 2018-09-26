@@ -24,9 +24,9 @@ class ResBlock(nn.Module):
         return out
 
 
-class ResNet(nn.Module):
-    def __init__(self, input_nc, conv_dim=64, use_bias=True, n_blocks=6):
-        super(ResNet, self).__init__()
+class Generator(nn.Module):
+    def __init__(self, input_nc, conv_dim=64, n_blocks=6, use_bias=True):
+        super(Generator, self).__init__()
 
         layers = [nn.ReflectionPad2d(3),
                   nn.Conv2d(input_nc, conv_dim, kernel_size=7, stride=1, padding=0, bias=use_bias),

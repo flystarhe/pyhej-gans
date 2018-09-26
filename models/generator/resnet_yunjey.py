@@ -2,8 +2,6 @@ import torch.nn as nn
 
 
 class ResBlock(nn.Module):
-    """Residual Block with instance normalization."""
-
     def __init__(self, conv_dim, use_bias):
         super(ResBlock, self).__init__()
         self.conv1 = nn.Conv2d(conv_dim, conv_dim, kernel_size=1, stride=1, padding=0, bias=use_bias)
@@ -34,15 +32,13 @@ class ResBlock(nn.Module):
         return out
 
 
-class ResNet(nn.Module):
-    """Generator network."""
-
-    def __init__(self, input_nc=1, class_nc=2, conv_dim=64, repeat_num=6):
-        super(ResNet, self).__init__()
+class Generator(nn.Module):
+    def __init__(self, input_nc=1, label_nc=2, conv_dim=64, n_blocks=6):
+        super(Generator, self).__init__()
 
         layers = list()
         layers.append(nn.ReflectionPad2d(3))
-        layers.append(nn.Conv2d(input_nc + class_nc, conv_dim, kernel_size=7, stride=1, padding=0, bias=False))
+        layers.append(nn.Conv2d(input_nc + label_nc, conv_dim, kernel_size=7, stride=1, padding=0, bias=False))
         layers.append(nn.InstanceNorm2d(conv_dim, affine=True, track_running_stats=True))
         layers.append(nn.ReLU(inplace=True))
 
@@ -56,7 +52,7 @@ class ResNet(nn.Module):
             curr_dim = next_dim
 
         # Bottleneck layers.
-        for i in range(repeat_num):
+        for i in range(n_blocks):
             layers.append(ResBlock(conv_dim=curr_dim, use_bias=False))
 
         # Up-sampling layers.
