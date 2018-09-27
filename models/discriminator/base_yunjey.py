@@ -1,5 +1,4 @@
 import torch.nn as nn
-import numpy as np
 
 
 class Discriminator(nn.Module):
@@ -19,9 +18,12 @@ class Discriminator(nn.Module):
             layers.append(nn.LeakyReLU(0.01))
             curr_dim = next_dim
 
+        layers.append(nn.Conv2d(curr_dim, curr_dim, kernel_size=3, stride=1, padding=1))
+        layers.append(nn.LeakyReLU(0.01))
+
         self.main = nn.Sequential(*layers)
         self.conv1 = nn.Conv2d(curr_dim, 1, kernel_size=3, stride=1, padding=1, bias=False)
-        self.conv2 = nn.Conv2d(curr_dim, label_nc, kernel_size=int(image_size / np.power(2, n_layers)), bias=False)
+        self.conv2 = nn.Conv2d(curr_dim, label_nc, kernel_size=int(image_size / (2 ** n_layers)), bias=False)
 
     def forward(self, x):
         h = self.main(x)
