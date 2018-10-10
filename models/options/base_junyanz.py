@@ -26,7 +26,7 @@ class BaseOptions(object):
         if args is None:
             args = sys.argv[1:]
         parser = argparse.ArgumentParser()
-        parser.add_argument("--gpu_ids", type=str2list, default=[], help="[0|0,1|0,1,2]")
+        parser.add_argument("--gpu_ids", type=str2list, default=[], help="0|1|0,1|0,1,2")
         parser.add_argument("--checkpoints_dir", type=str, default="./checkpoints/experiment_name")
         # for dataset
         parser.add_argument("--json_file", type=str, required=True)

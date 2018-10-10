@@ -51,10 +51,9 @@ class Classifier(nn.Module):
         layers.append(nn.LeakyReLU(0.1))
 
         self.main = nn.Sequential(*layers)
-        self.final = nn.Linear(int((image_size / (2 ** n_layers)) ** 2), class_num)
+        self.final = nn.Conv2d(curr_dim, class_num, kernel_size=int(image_size / (2 ** n_layers)), bias=False)
 
     def forward(self, x):
         h = self.main(x)
-        h = h.view(h.size(0), -1)
         y = self.final(h)
-        return y
+        return y.view(y.size(0), -1)
