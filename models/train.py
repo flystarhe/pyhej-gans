@@ -42,13 +42,13 @@ def get_scheduler(optimizer, opt):
 
 
 def load_net(net, iters, name, opt, device):
-    file_name = os.path.join(opt.checkpoints_dir, "%s_net_%s.pth".format(iters, name))
+    file_name = os.path.join(opt.checkpoints_dir, "{:8d}_net_{}.pth".format(iters, name))
     net.load_state_dict(torch.load(file_name, map_location=device))
     net.to(device)
 
 
 def save_net(net, iters, name, opt):
-    file_name = os.path.join(opt.checkpoints_dir, "%s_net_%s.pth".format(iters, name))
+    file_name = os.path.join(opt.checkpoints_dir, "{:8d}_net_{}.pth".format(iters, name))
     if isinstance(net, torch.nn.DataParallel):
         torch.save(net.module.state_dict(), file_name)
     else:
@@ -154,7 +154,7 @@ def main(args):
             scheduler.step()
 
         if curr_iters % opt.model_save == 0:
-            print("saving the model at the end of iters {}".format(curr_iters))
+            print("saving the model: iters = {}, lr = {}".format(curr_iters, optimizers[0].param_groups[0]["lr"]))
             save_net(net_D, curr_iters, "D", opt)
             save_net(net_G, curr_iters, "G", opt)
 
