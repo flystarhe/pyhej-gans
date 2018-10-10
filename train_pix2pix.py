@@ -122,7 +122,7 @@ def main(args):
         set_requires_grad(net_D, True)
         optimizer_D.zero_grad()
 
-        pred_fake = net_D(fake_B)
+        pred_fake = net_D(fake_B.detach())
         loss_D_fake = criterionGAN(pred_fake, False)
 
         pred_real = net_D(real_B)
