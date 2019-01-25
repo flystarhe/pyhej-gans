@@ -1,8 +1,12 @@
+/.idea/
+
 /**/tmps/
+/**/.cache/
 /**/__pycache__/
 /**/.ipynb_checkpoints/
 /**/.DS_Store
+/**/*.pyc
 
-/.idea/
+/docs/**/*.html
 
-/docs_md/**/*.html
+/Untitled*
