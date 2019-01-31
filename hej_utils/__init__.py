@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import codecs
 import numpy as np
 
@@ -20,11 +21,12 @@ def print_network(model, name):
 
 
 def print_options(opt):
-    message = json.dumps(vars(opt), indent=2)
+    message = json.dumps(vars(opt), indent=2, sort_keys=True)
     os.makedirs(opt.checkpoints_dir, exist_ok=True)
-    file_path = os.path.join(opt.checkpoints_dir, "opt.json")
-    with codecs.open(file_path, "w", "utf-8") as writer:
-        writer.write(message)
+    file_path = os.path.join(opt.checkpoints_dir, "log.opt")
+    with codecs.open(file_path, "a", "utf-8") as writer:
+        writer.write("# " + time.strftime("%Y-%m-%d %H:%M:%S") + "\n")
+        writer.write(message + "\n")
     print(message)
 
 
@@ -33,6 +35,8 @@ class Logger(object):
         os.makedirs(checkpoints_dir, exist_ok=True)
         self.path = os.path.join(checkpoints_dir, "log.loss")
         self.data = {}
+
+        self.log(time.strftime("%Y-%m-%d %H:%M:%S"))
 
     def add(self, **kwargs):
         for k, v in kwargs.items():
@@ -44,9 +48,8 @@ class Logger(object):
 
     def save(self, curr_iters):
         with codecs.open(self.path, "a", "utf-8") as writer:
-            message = {k: np.mean(v) for k, v in self.data.items()}
-            message["curr_iters"] = curr_iters
-            message = json.dumps(message, sort_keys=True)
+            message = ["{}:{:.6f}".format(k, np.mean(self.data[k])) for k in sorted(self.data.keys())]
+            message = "{}# {}".format(curr_iters, ",".join(message))
             writer.write(message + "\n")
             self.data = {}
         return message
